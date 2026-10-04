@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jurnal Studi & Catatan Perkuliahan S1 RPL PAI - Aulia Rahman</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Lora', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f4f7f5',
+                            100: '#e5edeb',
+                            800: '#112a23',
+                            900: '#0a1c17',
+                        },
+                        pai: {
+                            50: '#f0fdf4',
+                            600: '#16a34a',
+                            700: '#15803d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .page-enter {
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .hidden-section {
+            display: none !important;
+        }
+
+
+
+
+        /* Latar belakang halaman agar kartu putih terlihat sangat menonjol */
+            .bg-canvas {
+                background-color: #dce2e8;
+            }
+
+            /* Efek Kartu 3D Menimbul Keluar (Pop-out Floating Card) */
+            .card-3d {
+                background: #ffffff;
+                border-radius: 24px;
+                /* Kombinasi 3 lapis bayangan untuk efek timbul nyata */
+                box-shadow: 
+                0 20px 30px -8px rgba(0, 0, 0, 0.12),
+                0 10px 15px -5px rgba(0, 0, 0, 0.06),
+                0 1px 3px 0 rgba(0, 0, 0, 0.04);
+                transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            }
+
+            /* Efek saat kursor diarahkan (makin menonjol keluar) */
+            .card-3d:hover {
+                transform: translateY(-10px) scale(1.02);
+                box-shadow: 
+                0 30px 45px -10px rgba(0, 0, 0, 0.22),
+                0 15px 20px -5px rgba(0, 0, 0, 0.12);
+            }
+
+            /* Animasi Muncul Berurutan */
+            @keyframes popUp {
+                0% {
+                opacity: 0;
+                transform: translateY(30px) scale(0.9);
+                }
+                100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                }
+            }
+
+            .animate-pop {
+                animation: popUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+                opacity: 0;
+            }
+
+            .delay-1 { animation-delay: 0.08s; }
+            .delay-2 { animation-delay: 0.16s; }
+            .delay-3 { animation-delay: 0.24s; }
+            .delay-4 { animation-delay: 0.32s; }
+            .delay-5 { animation-delay: 0.40s; }
+            .delay-6 { animation-delay: 0.48s; }
+            .delay-7 { animation-delay: 0.56s; }
+    </style>
+</head>
+
+
+
+
+
+
+
+
+
+
+
+<body class="bg-brand-50 text-brand-800 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- HEADER / NAVIGATION -->
+    <header class="bg-white/95 backdrop-blur-md border-b border-emerald-100 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-6xl mx-auto px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo & Identitas -->
+                <div class="flex-shrink-0 cursor-pointer" onclick="navigate('home')">
+                    <h1 class="font-serif text-2xl font-bold tracking-tight text-brand-900">Aulia<span class="text-emerald-600">Rahman.</span></h1>
+                    <span class="text-xs font-semibold text-emerald-800 block -mt-1 tracking-wide">S1 RPL PAI • Angkatan 6 (Kelas H)</span>
+                </div>
+
+                <!-- Desktop Menu -->
+                <nav class="hidden md:flex space-x-8">
+                    <button onclick="navigate('home')" id="nav-home" class="nav-btn text-emerald-900 font-medium border-b-2 border-emerald-700 pb-1 transition-colors hover:text-emerald-600">
+                        Beranda
+                    </button>
+                    <button onclick="navigate('schedule')" id="nav-schedule" class="nav-btn text-gray-500 font-medium border-b-2 border-transparent pb-1 transition-colors hover:text-emerald-800">
+                        Jadwal Kuliah
+                    </button>
+                    <button onclick="navigate('articles')" id="nav-articles" class="nav-btn text-gray-500 font-medium border-b-2 border-transparent pb-1 transition-colors hover:text-emerald-800">
+                        Catatan Mata Kuliah
+                    </button>
+                </nav>
+
+                <!-- Tombol Hamburger Mobile -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" onclick="toggleMobileMenu()" class="text-brand-900 focus:outline-none p-2 rounded-lg hover:bg-emerald-50 transition-colors" aria-label="Menu Utama">
+                        <i id="menu-icon" class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel Menu Mobile -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-b border-gray-200 px-6 py-4 shadow-lg transition-all duration-300">
+            <div class="flex flex-col space-y-3">
+                <button onclick="navigate('home'); toggleMobileMenu();" id="mobile-nav-home" class="text-left py-2 font-medium text-emerald-900 border-l-4 border-emerald-700 pl-3">
+                    Beranda
+                </button>
+                <button onclick="navigate('schedule'); toggleMobileMenu();" id="mobile-nav-schedule" class="text-left py-2 font-medium text-gray-600 border-l-4 border-transparent pl-3">
+                    Jadwal Kuliah
+                </button>
+                <button onclick="navigate('articles'); toggleMobileMenu();" id="mobile-nav-articles" class="text-left py-2 font-medium text-gray-600 border-l-4 border-transparent pl-3">
+                    Catatan Mata Kuliah
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow w-full max-w-6xl mx-auto px-6 lg:px-8 py-10">
+ 
+        
+
+
+        <!-- HALAMAN 1: BERANDA -->
+        <section id="home" class="page-enter">
+            <div class="flex flex-col-reverse lg:flex-row items-center gap-12 py-6">
+                <!-- Teks Perkenalan -->
+                <div class="lg:w-3/5 space-y-6">
+                    <div>
+                        <span class="inline-block bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-2">
+                            Ruang Studi Digital • S1 RPL PAI
+                        </span>
+                        <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-medium leading-tight text-brand-900">
+                            Pusat Dokumentasi Materi & Catatan Kuliah PAI.
+                        </h2>
+                    </div>
+                    
+                    <p class="text-base sm:text-lg leading-relaxed text-gray-700">
+                        Selamat datang di situs akademik pribadi saya. Web ini difungsikan khusus sebagai wadah pengarsipan ringkasan materi, naskah perkuliahan, dan tugas dari seluruh mata kuliah <span class="font-semibold text-emerald-900">S1 RPL Pendidikan Agama Islam (Angkatan 6 - Kelas H)</span>.
+                    </p>
+
+                    <!-- Ringkasan Statistik Mata Kuliah -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-2">
+                        <div class="bg-white p-4 rounded-xl border border-emerald-100 shadow-sm text-center">
+                            <span class="text-2xl font-bold text-emerald-700 block">7</span>
+                            <span class="text-xs text-gray-600 font-medium">Mata Kuliah</span>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl border border-emerald-100 shadow-sm text-center">
+                            <span class="text-2xl font-bold text-emerald-700 block">Sabtu - Ahad</span>
+                            <span class="text-xs text-gray-600 font-medium">Hari Perkuliahan</span>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl border border-emerald-100 shadow-sm text-center col-span-2 sm:col-span-1">
+                            <span class="text-2xl font-bold text-emerald-700 block">Kelas H</span>
+                            <span class="text-xs text-gray-600 font-medium">Angkatan 6</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4 pt-4">
+                        <button onclick="navigate('articles')" class="bg-emerald-800 text-white px-7 py-3 rounded-full font-medium hover:bg-emerald-900 transition-colors shadow-md shadow-emerald-900/10 text-center">
+                            <i class="fas fa-book-open mr-2"></i> Lihat Catatan Kuliah
+                        </button>
+                        <button onclick="navigate('schedule')" class="px-7 py-3 rounded-full font-medium border border-emerald-300 text-emerald-900 bg-white hover:bg-emerald-50 transition-colors text-center">
+                            <i class="far fa-calendar-alt mr-2"></i> Jadwal Perkuliahan
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Foto Profil -->
+                <div class="lg:w-2/5 flex justify-center">
+                    <div class="relative w-64 h-80 sm:w-72 sm:h-96 rounded-2xl overflow-hidden shadow-xl border-4 border-white">
+                        <img src="jadwalkuliah.jpeg" 
+                             alt="Foto Profil Penulis" 
+                             onerror="this.src='jadwalkuliah.jpeg';"
+                             class="absolute inset-0 w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+                        <div class="absolute bottom-4 left-4 right-4 text-white">
+                            <p class="font-serif font-bold text-lg">Aulia Rahman</p>
+                            <p class="text-xs text-emerald-200">Mahasiswa S1 RPL PAI</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+
+
+
+        <!-- HALAMAN 2: JADWAL KULIAH -->
+<section id="schedule" class="hidden-section bg-slate-50 p-6 sm:p-10 rounded-3xl">
+    <!-- Header Halaman -->
+    <div class="mb-10 text-center max-w-2xl mx-auto">
+        <span class="text-xs font-bold uppercase tracking-wider text-indigo-700 bg-indigo-100/80 border border-indigo-200/50 px-3.5 py-1 rounded-full">
+            S1 RPL PAI Angkatan 6 - Kelas H
+        </span>
+        <h2 class="font-serif text-3xl font-bold text-slate-800 mt-3 mb-3">Jadwal Perkuliahan</h2>
+        <p class="text-slate-500 text-sm">Jadwal perkuliahan tatap muka & daring harian beserta dosen pengampu mata kuliah.</p>
+    </div>
+
+    <!-- Grid 2 Kolom (Sabtu & Ahad) -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        <!-- HARI SABTU -->
+        <div class="bg-white rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-200/80 overflow-hidden">
+            <!-- Header Hari Sabtu -->
+            <div class="bg-indigo-900 text-white px-6 py-4 flex items-center justify-between">
+                <h3 class="font-serif text-xl font-semibold tracking-wide flex items-center">
+                    <i class="far fa-calendar-check mr-2.5 text-indigo-300"></i> SABTU
+                </h3>
+                <span class="text-xs font-medium bg-indigo-800/80 text-indigo-100 px-3 py-1 rounded-full border border-indigo-700/50">
+                    4 Mata Kuliah
+                </span>
+            </div>
+
+            <!-- List Mata Kuliah Sabtu -->
+            <div class="divide-y divide-slate-100">
+                <!-- MK 1 -->
+                <div class="p-5 hover:bg-indigo-50/40 transition-colors">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 px-2.5 py-1 rounded-lg">
+                            <i class="far fa-clock mr-1.5 text-indigo-500"></i>07.50 - 09.30 WIB
+                        </span>
+                    </div>
+                    <h4 class="font-semibold text-slate-800 text-lg">Pendidikan Anti Korupsi</h4>
+                    <p class="text-sm text-slate-500 mt-1.5 flex items-center">
+                        <i class="fas fa-user-tie text-xs mr-2 text-indigo-600"></i>
+                        Dosen: <strong class="text-slate-700 ml-1">Abdy Ihdal Umam, M.Psi., Psikolog.</strong>
+                    </p>
+                </div>
+
+                <!-- MK 2 -->
+                <div class="p-5 hover:bg-indigo-50/40 transition-colors">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 px-2.5 py-1 rounded-lg">
+                            <i class="far fa-clock mr-1.5 text-indigo-500"></i>09.30 - 11.10 WIB
+                        </span>
+                    </div>
+                    <h4 class="font-semibold text-slate-800 text-lg">Strategi Belajar Mengajar</h4>
+                    <p class="text-sm text-slate-500 mt-1.5 flex items-center">
+                        <i class="fas fa-user-tie text-xs mr-2 text-indigo-600"></i>
+                        Dosen: <strong class="text-slate-700 ml-1">Oni Marliana Susianti, M.Pd.</strong>
+                    </p>
+                </div>
+
+                <!-- MK 3 -->
+                <div class="p-5 hover:bg-indigo-50/40 transition-colors">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 px-2.5 py-1 rounded-lg">
+                            <i class="far fa-clock mr-1.5 text-indigo-500"></i>12.30 - 15.00 WIB
+                        </span>
+                    </div>
+                    <h4 class="font-semibold text-slate-800 text-lg">Media Pembelajaran</h4>
+                    <p class="text-sm text-slate-500 mt-1.5 flex items-center">
+                        <i class="fas fa-user-tie text-xs mr-2 text-indigo-600"></i>
+                        Dosen: <strong class="text-slate-700 ml-1">Qy Atqiya, M.Pd.</strong>
+                    </p>
+                </div>
+
+                <!-- MK 4 -->
+                <div class="p-5 hover:bg-indigo-50/40 transition-colors">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 px-2.5 py-1 rounded-lg">
+                            <i class="far fa-clock mr-1.5 text-indigo-500"></i>15.30 - 17.10 WIB
+                        </span>
+                    </div>
+                    <h4 class="font-semibold text-slate-800 text-lg">Kewirausahaan</h4>
+                    <p class="text-sm text-slate-500 mt-1.5 flex items-center">
+                        <i class="fas fa-user-tie text-xs mr-2 text-indigo-600"></i>
+                        Dosen: <strong class="text-slate-700 ml-1">Hafni Syahida Farah Rahma, M.Pd.</strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- HARI AHAD -->
+        <div class="bg-white rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-200/80 overflow-hidden">
+            <!-- Header Hari Ahad -->
+            <div class="bg-slate-800 text-white px-6 py-4 flex items-center justify-between">
+                <h3 class="font-serif text-xl font-semibold tracking-wide flex items-center">
+                    <i class="far fa-calendar-check mr-2.5 text-slate-300"></i> AHAD
+                </h3>
+                <span class="text-xs font-medium bg-slate-700/80 text-slate-100 px-3 py-1 rounded-full border border-slate-600/50">
+                    3 Mata Kuliah
+                </span>
+            </div>
+
+            <!-- List Mata Kuliah Ahad -->
+            <div class="divide-y divide-slate-100">
+                <!-- MK 1 -->
+                <div class="p-5 hover:bg-slate-50 transition-colors">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold text-slate-700 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-lg">
+                            <i class="far fa-clock mr-1.5 text-slate-500"></i>07.50 - 09.30 WIB
+                        </span>
+                    </div>
+                    <h4 class="font-semibold text-slate-800 text-lg">Bahasa Inggris 1</h4>
+                    <p class="text-sm text-slate-500 mt-1.5 flex items-center">
+                        <i class="fas fa-user-tie text-xs mr-2 text-slate-600"></i>
+                        Dosen: <strong class="text-slate-700 ml-1">Diah Nova Anggraini, M.Psi.</strong>
+                    </p>
+                </div>
+
+                <!-- MK 2 -->
+                <div class="p-5 hover:bg-slate-50 transition-colors">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold text-slate-700 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-lg">
+                            <i class="far fa-clock mr-1.5 text-slate-500"></i>09.30 - 12.00 WIB
+                        </span>
+                    </div>
+                    <h4 class="font-semibold text-slate-800 text-lg">Metodologi Penelitian Pendidikan Islam</h4>
+                    <p class="text-sm text-slate-500 mt-1.5 flex items-center">
+                        <i class="fas fa-user-tie text-xs mr-2 text-slate-600"></i>
+                        Dosen: <strong class="text-slate-700 ml-1">Muhamad Abdillah, M.Pd.</strong>
+                    </p>
+                </div>
+
+                <!-- MK 3 -->
+                <div class="p-5 hover:bg-slate-50 transition-colors">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold text-slate-700 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-lg">
+                            <i class="far fa-clock mr-1.5 text-slate-500"></i>13.20 - 15.30 WIB
+                        </span>
+                    </div>
+                    <h4 class="font-semibold text-slate-800 text-lg">Bahasa Arab 1</h4>
+                    <p class="text-sm text-slate-500 mt-1.5 flex items-center">
+                        <i class="fas fa-user-tie text-xs mr-2 text-slate-600"></i>
+                        Dosen: <strong class="text-slate-700 ml-1">Raushan Fikri Adam, Lc., MIRKH</strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+
+
+
+
+
+
+
+
+
+
+    <!-- HALAMAN 3: CATATAN MATA KULIAH -->
+<section id="articles" class="hidden-section bg-[#eef2f5] p-6 sm:p-10 rounded-3xl">
+    <div class="mb-10 text-center max-w-2xl mx-auto">
+        <h2 class="font-serif text-3xl font-bold text-gray-800 mb-2">Catatan Per Mata Kuliah</h2>
+        <p class="text-gray-500 text-sm">Pilih mata kuliah di bawah ini untuk mengakses rangkuman materi, tugas, dan naskah perkuliahan.</p>
+    </div>
+
+    <!-- Grid 7 Mata Kuliah -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+        <!-- MK 1: Pendidikan Anti Korupsi -->
+        <article class="animate-pop-card delay-1 soft-card bg-white rounded-3xl p-6 transition-all duration-300 hover:-translate-y-2 flex flex-col justify-between border border-white">
+            <div>
+                <div class="flex items-start justify-between mb-4">
+                    <div>
+                        <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider block mb-1">Sabtu • 07.50 WIB</span>
+                        <h3 class="font-serif text-lg font-bold text-gray-800 leading-snug">Pendidikan Anti Korupsi</h3>
+                    </div>
+                    <div class="w-10 h-10 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-500 text-lg shadow-inner">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                </div>
+                <p class="text-xs text-emerald-700 font-medium mb-3">
+                    <i class="fas fa-chalkboard-teacher mr-1"></i> Abdy Ihdal Umam, M.Psi., Psikolog.
+                </p>
+                <p class="text-gray-500 text-xs leading-relaxed mb-6">
+                    Catatan materi pembentukan karakter integritas, nilai-nilai anti-korupsi, dan etika moral dalam pendidikan Islam.
+                </p>
+            </div>
+            <div>
+                <!-- Bar Warna Timbul -->
+                <div class="h-2.5 w-full bg-amber-400 rounded-full mb-4 shadow-sm"></div>
+                <a href="#" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-xs font-semibold text-emerald-800 hover:text-emerald-600 transition-colors">
+                    Buka Catatan <i class="fas fa-arrow-right ml-2 text-[10px]"></i>
+                </a>
+            </div>
+        </article>
+
+        <!-- MK 2: Strategi Belajar Mengajar -->
+        <article class="animate-pop-card delay-2 soft-card bg-white rounded-3xl p-6 transition-all duration-300 hover:-translate-y-2 flex flex-col justify-between border border-white">
+            <div>
+                <div class="flex items-start justify-between mb-4">
+                    <div>
+                        <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider block mb-1">Sabtu • 09.30 WIB</span>
+                        <h3 class="font-serif text-lg font-bold text-gray-800 leading-snug">Strategi Belajar Mengajar</h3>
+                    </div>
+                    <div class="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-600 text-lg shadow-inner">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                </div>
+                <p class="text-xs text-emerald-700 font-medium mb-3">
+                    <i class="fas fa-chalkboard-teacher mr-1"></i> Oni Marliana Susianti, M.Pd.
+                </p>
+                <p class="text-gray-500 text-xs leading-relaxed mb-6">
+                    Ringkasan metode, model pembelajaran inovatif, serta pendekatan pedagogis efektif dalam mengajar PAI.
+                </p>
+            </div>
+            <div>
+                <!-- Bar Warna Timbul -->
+                <div class="h-2.5 w-full bg-slate-500 rounded-full mb-4 shadow-sm"></div>
+                <a href="#" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-xs font-semibold text-emerald-800 hover:text-emerald-600 transition-colors">
+                    Buka Catatan <i class="fas fa-arrow-right ml-2 text-[10px]"></i>
+                </a>
+            </div>
+        </article>
+
+        <!-- MK 3: Media Pembelajaran -->
+        <article class="animate-pop-card delay-3 soft-card bg-white rounded-3xl p-6 transition-all duration-300 hover:-translate-y-2 flex flex-col justify-between border border-white">
+            <div>
+                <div class="flex items-start justify-between mb-4">
+                    <div>
+                        <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider block mb-1">Sabtu • 12.30 WIB</span>
+                        <h3 class="font-serif text-lg font-bold text-gray-800 leading-snug">Media Pembelajaran</h3>
+                    </div>
+                    <div class="w-10 h-10 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-500 text-lg shadow-inner">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                </div>
+                <p class="text-xs text-emerald-700 font-medium mb-3">
+                    <i class="fas fa-chalkboard-teacher mr-1"></i> Qy Atqiya, M.Pd.
+                </p>
+                <p class="text-gray-500 text-xs leading-relaxed mb-6">
+                    Eksplorasi pengembangan media pembelajaran berbasis teknologi & visual untuk menyampaikan materi PAI secara interaktif.
+                </p>
+            </div>
+            <div>
+                <!-- Bar Warna Timbul -->
+                <div class="h-2.5 w-full bg-emerald-500 rounded-full mb-4 shadow-sm"></div>
+                <a href="#" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-xs font-semibold text-emerald-800 hover:text-emerald-600 transition-colors">
+                    Buka Catatan <i class="fas fa-arrow-right ml-2 text-[10px]"></i>
+                </a>
+            </div>
+        </article>
+
+        <!-- MK 4: Kewirausahaan -->
+        <article class="animate-pop-card delay-4 soft-card bg-white rounded-3xl p-6 transition-all duration-300 hover:-translate-y-2 flex flex-col justify-between border border-white">
+            <div>
+                <div class="flex items-start justify-between mb-4">
+                    <div>
+                        <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider block mb-1">Sabtu • 15.30 WIB</span>
+                        <h3 class="font-serif text-lg font-bold text-gray-800 leading-snug">Kewirausahaan</h3>
+                    </div>
+                    <div class="w-10 h-10 rounded-2xl bg-cyan-50 flex items-center justify-center text-cyan-500 text-lg shadow-inner">
+                        <i class="fas fa-bullhorn"></i>
+                    </div>
+                </div>
+                <p class="text-xs text-emerald-700 font-medium mb-3">
+                    <i class="fas fa-chalkboard-teacher mr-1"></i> Hafni Syahida Farah Rahma, M.Pd.
+                </p>
+                <p class="text-gray-500 text-xs leading-relaxed mb-6">
+                    Konsep dasar technopreneurship, bisnis syariah, dan inovasi kemandirian finansial dalam dunia pendidikan.
+                </p>
+            </div>
+            <div>
+                <!-- Bar Warna Timbul -->
+                <div class="h-2.5 w-full bg-cyan-500 rounded-full mb-4 shadow-sm"></div>
+                <a href="#" class="inline-flex items-center text-xs font-semibold text-emerald-800 hover:text-emerald-600 transition-colors">
+                    Buka Catatan <i class="fas fa-arrow-right ml-2 text-[10px]"></i>
+                </a>
+            </div>
+        </article>
+
+        <!-- MK 5: Bahasa Inggris 1 -->
+        <article class="animate-pop-card delay-5 soft-card bg-white rounded-3xl p-6 transition-all duration-300 hover:-translate-y-2 flex flex-col justify-between border border-white">
+            <div>
+                <div class="flex items-start justify-between mb-4">
+                    <div>
+                        <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider block mb-1">Ahad • 07.50 WIB</span>
+                        <h3 class="font-serif text-lg font-bold text-gray-800 leading-snug">Bahasa Inggris 1</h3>
+                    </div>
+                    <div class="w-10 h-10 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-500 text-lg shadow-inner">
+                        <i class="fas fa-coffee"></i>
+                    </div>
+                </div>
+                <p class="text-xs text-emerald-700 font-medium mb-3">
+                    <i class="fas fa-chalkboard-teacher mr-1"></i> Diah Nova Anggraini, M.Psi.
+                </p>
+                <p class="text-gray-500 text-xs leading-relaxed mb-6">
+                    Materi dasar English for Islamic Studies, tata bahasa (grammar), dan kosakata akademis internasional.
+                </p>
+            </div>
+            <div>
+                <!-- Bar Warna Timbul -->
+                <div class="h-2.5 w-full bg-blue-600 rounded-full mb-4 shadow-sm"></div>
+                <a href="#" class="inline-flex items-center text-xs font-semibold text-emerald-800 hover:text-emerald-600 transition-colors">
+                    Buka Catatan <i class="fas fa-arrow-right ml-2 text-[10px]"></i>
+                </a>
+            </div>
+        </article>
+
+        <!-- MK 6: Metodologi Penelitian PAI -->
+        <article class="animate-pop-card delay-6 soft-card bg-white rounded-3xl p-6 transition-all duration-300 hover:-translate-y-2 flex flex-col justify-between border border-white">
+            <div>
+                <div class="flex items-start justify-between mb-4">
+                    <div>
+                        <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider block mb-1">Ahad • 09.30 WIB</span>
+                        <h3 class="font-serif text-lg font-bold text-gray-800 leading-snug">Metodologi Penelitian PAI</h3>
+                    </div>
+                    <div class="w-10 h-10 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-800 text-lg shadow-inner">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                </div>
+                <p class="text-xs text-emerald-700 font-medium mb-3">
+                    <i class="fas fa-chalkboard-teacher mr-1"></i> Muhamad Abdillah, M.Pd.
+                </p>
+                <p class="text-gray-500 text-xs leading-relaxed mb-6">
+                    Panduan penyusunan proposal, teknik riset kualitatif & kuantitatif, serta penulisan karya ilmiah riset PAI.
+                </p>
+            </div>
+            <div>
+                <!-- Bar Warna Timbul -->
+                <div class="h-2.5 w-full bg-amber-800 rounded-full mb-4 shadow-sm"></div>
+                <a href="#" class="inline-flex items-center text-xs font-semibold text-emerald-800 hover:text-emerald-600 transition-colors">
+                    Buka Catatan <i class="fas fa-arrow-right ml-2 text-[10px]"></i>
+                </a>
+            </div>
+        </article>
+
+        <!-- MK 7: Bahasa Arab 1 -->
+        <article class="animate-pop-card delay-7 soft-card bg-white rounded-3xl p-6 transition-all duration-300 hover:-translate-y-2 flex flex-col justify-between border border-white">
+            <div>
+                <div class="flex items-start justify-between mb-4">
+                    <div>
+                        <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider block mb-1">Ahad • 13.20 WIB</span>
+                        <h3 class="font-serif text-lg font-bold text-gray-800 leading-snug">Bahasa Arab 1</h3>
+                    </div>
+                    <div class="w-10 h-10 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-600 text-lg shadow-inner">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                </div>
+                <p class="text-xs text-emerald-700 font-medium mb-3">
+                    <i class="fas fa-chalkboard-teacher mr-1"></i> Raushan Fikri Adam, Lc., MIRKH
+                </p>
+                <p class="text-gray-500 text-xs leading-relaxed mb-6">
+                    Kaidah dasar Nahwu-Shorof, qira'ah naskah keislaman, dan penguasaan mufradat dasar bahasa Arab.
+                </p>
+            </div>
+            <div>
+                <!-- Bar Warna Timbul -->
+                <div class="h-2.5 w-full bg-purple-600 rounded-full mb-4 shadow-sm"></div>
+                <a href="#" class="inline-flex items-center text-xs font-semibold text-emerald-800 hover:text-emerald-600 transition-colors">
+                    Buka Catatan <i class="fas fa-arrow-right ml-2 text-[10px]"></i>
+                </a>
+            </div>
+        </article>
+
+    </div>
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-gray-200 bg-white mt-auto py-8">
+        <div class="max-w-6xl mx-auto px-6 lg:px-8 text-center flex flex-col md:flex-row justify-between items-center gap-4">
+            <p class="text-sm text-gray-600">
+                &copy; <span id="year"></span> Aulia Rahman • <strong>S1 RPL PAI Angkatan 6 (Kelas H)</strong>.
+            </p>
+            <div class="flex space-x-5 text-gray-400">
+                <a href="https://www.instagram.com/aulia_rahmn777/" target="_blank" rel="noopener noreferrer" class="hover:text-emerald-800 transition-colors" title="Instagram"><i class="fab fa-instagram text-xl"></i></a>
+                <a href="https://www.facebook.com/profile.php?id=100009616811245" target="_blank" rel="noopener noreferrer" class="hover:text-emerald-800 transition-colors" title="Facebook"><i class="fab fa-facebook text-xl"></i></a>
+                <a href="mailto:auliarn629@gmail.com" class="hover:text-emerald-800 transition-colors" title="Email"><i class="far fa-envelope text-xl"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JS Sederhana untuk Navigasi Section -->
+    <script>
+        // Tanggal di Footer
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Navigasi Antar Halaman/Section
+        function navigate(sectionId) {
+            const sections = ['home', 'schedule', 'articles'];
+            sections.forEach(id => {
+                const section = document.getElementById(id);
+                if (section) {
+                    if (id === sectionId) {
+                        section.classList.remove('hidden-section');
+                        section.classList.add('page-enter');
+                    } else {
+                        section.classList.add('hidden-section');
+                        section.classList.remove('page-enter');
+                    }
+                }
+            });
+
+            // Update styling tombol navigasi desktop
+            const navBtnMap = {
+                'home': 'nav-home',
+                'schedule': 'nav-schedule',
+                'articles': 'nav-articles'
+            };
+
+            Object.keys(navBtnMap).forEach(key => {
+                const btn = document.getElementById(navBtnMap[key]);
+                if (btn) {
+                    if (key === sectionId) {
+                        btn.className = "nav-btn text-emerald-900 font-medium border-b-2 border-emerald-700 pb-1 transition-colors hover:text-emerald-600";
+                    } else {
+                        btn.className = "nav-btn text-gray-500 font-medium border-b-2 border-transparent pb-1 transition-colors hover:text-emerald-800";
+                    }
+                }
+            });
+        }
+
+        // Toggle Menu Mobile
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const icon = document.getElementById('menu-icon');
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                icon.className = "fas fa-times text-xl";
+            } else {
+                menu.classList.add('hidden');
+                icon.className = "fas fa-bars text-xl";
+            }
+        }
+    </script>
+</body>
+</html>
